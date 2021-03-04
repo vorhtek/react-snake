@@ -1,40 +1,59 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import Cube from "./components/Cube";
 
 function App() {
-  const [xDir, setXDir] = React.useRef(0);
+  const [axis, setAxis] = React.useState("y");
+  const [xDir, setXDir] = React.useState(0);
   const [yDir, setYDir] = React.useState(0);
   const [width, setWidth] = React.useState(10);
-  const x = React.useRef(0);
-  const y = React.useRef(0);
+  const [x, setX] = React.useState(0);
+  const [y, setY] = React.useState(0);
 
-  const loop = () => {
-    console.log({ xDir });
-    setTimeout(loop, 500);
-  };
-  const loopRef: any = React.useRef(loop);
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setXDir(xDir);
+      setYDir(yDir);
+      setAxis(axis);
+      if (axis === "x") {
+        setX(x + xDir * width);
+      }
+      if (axis === "y") {
+        setY(y + yDir * width);
+      }
+
+      console.log({ xDir, yDir, axis });
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [x, xDir, y, yDir, axis]);
 
   React.useEffect(() => {
     const handleKeypress = (e: any) => {
       switch (e.keyCode) {
         case 38:
           setYDir(1);
+          setAxis("y");
           break;
         case 40:
           setYDir(-1);
+          setAxis("y");
           break;
         case 37:
           setXDir(-1);
+          setAxis("x");
           break;
         case 39:
           setXDir(1);
+          setAxis("x");
           break;
       }
     };
     window.addEventListener("keydown", handleKeypress);
-    loop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -62,7 +81,7 @@ function App() {
           backgroundColor: "#eee",
         }}
       >
-        <Cube width={width} x={x.current} y={y.current} />
+        <Cube width={width} x={x} y={y} />
       </div>
     </div>
   );
